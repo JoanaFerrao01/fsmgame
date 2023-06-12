@@ -35,7 +35,7 @@ public class GameManager {
         System.out.println(currentState.getState().toString()); //to erase
     }
 
-    private void updateState(GameStateModel newState){
+    public void updateState(GameStateModel newState){
         currentState.exitState();
         currentState = newState;
         currentState.enterState();

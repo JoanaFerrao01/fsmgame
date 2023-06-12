@@ -30,4 +30,6 @@ public final class Maze {
                     char_board[y][x] = board[y][x].getSymbol();
         return char_board;
     }
+    //getMaze().lenght = nr of rows (height : x)
+    //getMaze[0].lenght = nr of columns (width : y)
 }
