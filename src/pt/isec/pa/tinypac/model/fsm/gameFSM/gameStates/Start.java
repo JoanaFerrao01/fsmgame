@@ -21,7 +21,8 @@ public class Start extends GameStateModel {
         this.state = GameStates.START;
         //setup game
         TxtToMaze converter = new TxtToMaze("src\\pt\\isec\\pa\\tinypac\\levels\\Level0" +level+".txt");
-       return converter.initMaze();
+
+        return converter.initMaze();
     }
 
     @Override

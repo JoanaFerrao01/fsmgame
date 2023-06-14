@@ -10,6 +10,7 @@ public class Pacman {
     private Direction direction;
     private int score;
     private int multiplicator;
+    private IMazeElement render;
 
     private Maze board;
     private GameManager gameManager; //can be altered!
@@ -20,6 +21,12 @@ public class Pacman {
         direction = Direction.STILL;
         score = 0;
         multiplicator = 1;
+        render = new IMazeElement() {
+            @Override
+            public char getSymbol() {
+                return 'A';
+            }
+        };
 
         this.board = board; //reference
         this.gameManager = gameManager;
@@ -30,6 +37,7 @@ public class Pacman {
     public Direction getDirection(){ return direction;}
     public int getScore(){return score;}
     public void updateDirection(Direction newDirection){ direction = newDirection;}
+    public IMazeElement getRender(){return render;}
 
     //move
     public void updatePacman(){

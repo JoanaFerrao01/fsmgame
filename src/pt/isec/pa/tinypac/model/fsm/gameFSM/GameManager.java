@@ -1,4 +1,5 @@
 package pt.isec.pa.tinypac.model.fsm.gameFSM;
+import pt.isec.pa.tinypac.model.characters.Pacman;
 import pt.isec.pa.tinypac.model.data.Maze;
 import pt.isec.pa.tinypac.model.fsm.gameFSM.gameStates.*;
 
@@ -9,11 +10,14 @@ public class GameManager {
     private Maze maze;
     int level;
 
+    protected Pacman pacman;
+
     public void startGame() throws Exception {
         this.level = 1;
         currentState = new Start(this); //começa o jogo c/ o estado start
 
         this.maze = currentState.enterState(level); //faz o codigo inicial do estado start
+        initPacman();
 
         //loop do jogo
         while(currentState.getState() != GameStates.LEVELCLEARED) { // || pacman has 0 lives?
@@ -47,6 +51,17 @@ public class GameManager {
                 System.out.print(maze.get(i, j).getSymbol());
             System.out.println();
         }
+    }
+    public Maze getMaze(){return maze;}
 
+    private void initPacman(){
+        for(int i=0; i< maze.getMaze().length; i++) {
+            for (int j = 0; j < maze.getMaze()[i].length; j++)
+                if (maze.get(i, j).getSymbol() == 'M') {
+                    pacman = new Pacman(i, j, maze, this);
+                    maze.set(i,j,pacman.getRender());
+                    return;
+                }
+        }
     }
 }
