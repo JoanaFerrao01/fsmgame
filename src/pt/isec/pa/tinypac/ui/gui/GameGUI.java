@@ -4,19 +4,44 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import pt.isec.pa.tinypac.model.data.Maze;
+import pt.isec.pa.tinypac.model.fsm.gameFSM.GameManager;
 
 public class GameGUI {
     private static Scene game;
     private GridPane gridPane;
+    private GameManager gameManager;
 
-    public GameGUI(Maze maze){
+    public GameGUI(Maze maze, GameManager gameManager){
+        this.gameManager = gameManager; //ref
+
+        Text text = new Text("SCORE: " + gameManager.getScore());
+        text.setFont(Font.font("Arial", FontWeight.BOLD,  18));
+        text.setFill(Color.WHITE);
+
+
+
         gridPane = new GridPane();
-        updateGridPane(maze);
+        updateGridPane(maze,text);
 
-        game = new Scene(gridPane,maze.getMaze()[0].length * 20,maze.getMaze().length * 20);
+        VBox vbox = new VBox();
+        vbox.getChildren().addAll(text, gridPane);
+
+
+        StackPane stackPane = new StackPane(vbox);
+        stackPane.setBackground(Background.fill(Color.BLACK));
+
+        game = new Scene(stackPane,maze.getMaze()[0].length * 20,maze.getMaze().length * 20+18);
+        game.setOnKeyPressed(event -> handleKeyPress(event.getCode(),maze,text));
 
     }
 
@@ -24,7 +49,7 @@ public class GameGUI {
         return new Text(String.valueOf(symbol));
     }
 
-    private void updateGridPane(Maze maze) {
+    private void updateGridPane(Maze maze,Text text) {
         gridPane.getChildren().clear();
 
         for (int i = 0; i < maze.getMaze().length; i++)
@@ -35,8 +60,8 @@ public class GameGUI {
                 gridPane.add(imageView, j, i);
             }
 
-
         gridPane.setAlignment(Pos.CENTER);
+        text.setText("SCORE: " + gameManager.getScore());
     }
 
     public static Scene getGame(){
@@ -58,5 +83,13 @@ public class GameGUI {
             case 'B', 'P', 'I', 'C' -> new Image("pt/isec/pa/tinypac/ui/gui/images/inky.png");
             default -> new Image("pt/isec/pa/tinypac/ui/gui/images/tile.png");
         };
+    }
+
+    private void handleKeyPress(KeyCode code, Maze maze, Text text){
+        //gameManager.startLoop(code);
+        gameManager.handleInput(code);
+        System.out.println(code);
+        updateGridPane(maze,text);
+
     }
 }

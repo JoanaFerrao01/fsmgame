@@ -40,7 +40,7 @@ public class PacmanGUI extends Application {
         try { m.startGame(); }
         catch (Exception e) { throw new RuntimeException(e);}
 
-        GameGUI gameGUI = new GameGUI(m.getMaze());
+        GameGUI gameGUI = new GameGUI(m.getMaze(), m);
         launch(args);
     }
 }

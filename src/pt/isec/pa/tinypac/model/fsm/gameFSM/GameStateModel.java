@@ -18,6 +18,8 @@ public abstract class GameStateModel {
     public GameStates getState() {return state;}
 
     //start
-    public abstract Maze enterState(int level, Pacman pacman) throws Exception;
+    public abstract Maze enterState(int level) throws Exception;
+    public Pacman updateState(Pacman pacman){return null;};
+
 }
 

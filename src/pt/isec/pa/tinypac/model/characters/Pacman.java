@@ -12,10 +12,10 @@ public class Pacman {
     private int multiplicator;
     private IMazeElement render;
 
-    private Maze board;
+    private Maze maze;
     private GameManager gameManager; //can be altered!
 
-    public Pacman(int x, int y, Maze board, GameManager gameManager){
+    public Pacman(int x, int y, Maze maze, GameManager gameManager){
         this.x = x;
         this.y = y;
         direction = Direction.STILL;
@@ -28,79 +28,118 @@ public class Pacman {
             }
         };
 
-        this.board = board; //reference
+        this.maze = maze; //reference
         this.gameManager = gameManager;
 
-        board.set(y,x,render);
+        maze.set(y,x,render);
     }
 
     public int getX(){ return x;}
     public int getY(){ return y;}
     public Direction getDirection(){ return direction;}
     public int getScore(){return score;}
-    public void updateDirection(Direction newDirection){ direction = newDirection;}
+    public void updateDirection(Direction newDirection){ direction = newDirection; updatePacman();}
     public IMazeElement getRender(){return render;}
 
     //move
     public void updatePacman(){
-        if(!frontTileObstructed()) { //assuming that pacman can advance:
-            switch (direction) {
+        if(frontTileObstructed()) return;
+
+        //assuming that pacman can advance:
+        int row=y, col=x;
+        switch (direction) {
                 case UP -> {
-                    if (x > 0) x--; //can go up in the maze
-                    else x = board.getMaze().length - 1; //x==0: pacman comes out the other side (bellow)
+                    if (y > 0) row--; //can go up in the maze
+                    else row = maze.getMaze().length - 1; //y==0: pacman comes out the other side (bellow)
                 }
                 case DOWN -> {
-                    if (x < board.getMaze().length - 1) x++; //can down up in the maze
-                    else x = 0; //x== min height : pacman comes out the other side (above)
+                    if (y < maze.getMaze().length - 1) row++; //can down up in the maze
+                    else row = 0; //y== min height : pacman comes out the other side (above)
                 }
                 case RIGHT -> {
-                    if (y > 0) y--; //can go right in the maze
-                    else y = board.getMaze()[x].length - 1; //y==0: pacman comes out the other side (left)
+                    if (x < maze.getMaze()[x].length - 1) col++; //can down left in the maze
+                    else col = 0; //x== min height : pacman comes out the other side (left)
+
                 }
                 case LEFT -> {
-                    if (y < board.getMaze()[x].length - 1) y++; //can down left in the maze
-                    else y = 0; //y== min height : pacman comes out the other side (right)
+                    if (x > 0) col--; //can go right in the maze
+                    else col = maze.getMaze()[x].length - 1; //x==0: pacman comes out the other side (right)
+                }
+                case STILL -> {
+                    return;
                 }
             }
-        }
+
+
+
+
+        movePacman(row,col);
 
         //pacman is in the new tile
         if (currentTileFood()) eat();
+        if(currentTilePortal()) teleport();
+    }
+
+    private void movePacman(int row, int col){
+
+        char resetChar = switch (maze.get(row,col).getSymbol()){
+            case 'W': yield 'W';
+            case 'F':
+            case 'S': yield 'F';
+            default: yield ' ';
+        };
+        IMazeElement reset = new IMazeElement() {
+            @Override
+            public char getSymbol() {
+                return resetChar;
+            }
+        };
+
+        int resetY = y, resetX = x;
+
+
+        x=col;
+        y=row;
+        maze.set(y,x,render);
+
     }
 
     private boolean frontTileObstructed(){
         int extraX = 0, extraY = 0;
         switch (direction){
-            case UP -> extraX = -1;
-            case DOWN -> extraX = 1;
-            case RIGHT -> extraY = 1;
-            case LEFT -> extraY = -1;
+            case UP -> extraY = -1;
+            case DOWN -> extraY = 1;
+            case RIGHT -> extraX = 1;
+            case LEFT -> extraX = -1;
+            case STILL -> {
+                return true;
+            }
         }
         //[x+extraX ; y+extraY] => tile pacman is facing
 
         //specific cases: looping
-        if(direction == Direction.DOWN && x+extraX > board.getMaze().length - 1) {
-            if (board.get(y, 0).getSymbol() == 'x') ;
+        if(direction == Direction.DOWN && y+extraY > maze.getMaze().length - 1) {
+            if (maze.get(0,x).getSymbol() == 'x' || maze.get(0,x).getSymbol() == 'Y') ;
                 return true;
         }
 
-        if(direction == Direction.RIGHT && y+extraY > board.getMaze()[x].length - 1) {
-            if (board.get(0,x).getSymbol() == 'x') ;
+        if(direction == Direction.RIGHT && x+extraX > maze.getMaze()[x].length - 1) {
+            if (maze.get(y,0).getSymbol() == 'x' || maze.get(y,0).getSymbol() == 'Y') ;
                 return true;
         }
 
-        if(direction == Direction.UP && x+extraX < 0) {
-            if (board.get(y, (board.getMaze().length - 1)).getSymbol() == 'x') ;
+        if(direction == Direction.UP && y+extraY < 0) {
+            if (maze.get((maze.getMaze().length - 1),0).getSymbol() == 'x' || maze.get((maze.getMaze().length - 1),0).getSymbol() == 'Y') ;
                 return true;
         }
 
-        if(direction == Direction.LEFT && y+extraY < 0) {
-            if (board.get((board.getMaze()[x].length - 1),x).getSymbol() == 'x') ;
+        if(direction == Direction.LEFT && x+extraX < 0) {
+            if (maze.get(y,(maze.getMaze().length-1)).getSymbol() == 'x' || maze.get(y,(maze.getMaze().length-1)).getSymbol() == 'Y') ;
             return true;
         }
 
 
-        if(board.get((y+extraY),(x+extraX)).getSymbol() == 'x')
+        if(maze.get((y+extraY),(x+extraX)).getSymbol() == 'x' || maze.get((y+extraY),(x+extraX)).getSymbol() == 'Y')
             return true;
         // return yes if the tile that pacman faces == wall : he cant go foward
 
@@ -108,9 +147,17 @@ public class Pacman {
     }
 
     private boolean currentTileFood(){
-        if(board.get(y,x).getSymbol() == 'o' ||
-                board.get(y,x).getSymbol() == 'O' ||
-                board.get(y,x).getSymbol() == 'f')
+        if(maze.get(y,x).getSymbol() == 'o' ||
+                maze.get(y,x).getSymbol() == 'O' ||
+                maze.get(y,x).getSymbol() == 'f')
+            return true;
+        // return true if the tile that pacman is standing == any food
+
+        return false; //no food :(
+    }
+
+    private boolean currentTilePortal(){
+        if(maze.get(y,x).getSymbol() == 'W')
             return true;
         // return true if the tile that pacman is standing == any food
 
@@ -119,9 +166,10 @@ public class Pacman {
 
     //eat?
     private void eat(){
-        switch (board.get(y,x).getSymbol()){
+        switch (maze.get(y,x).getSymbol()){
             case 'o' -> {
                 score++;
+                System.out.println(score);
 
                 //resets tile
                 IMazeElement floor = new IMazeElement() {
@@ -130,7 +178,7 @@ public class Pacman {
                         return ' ';
                     }
                 };
-                board.set(y,x, floor);
+                maze.set(y,x, floor);
             }
             case 'O' -> {
                 score += 10;
@@ -144,7 +192,7 @@ public class Pacman {
                         return ' ';
                     }
                 };
-                board.set(y,x, floor);
+                maze.set(y,x, floor);
             }
             case 'f' -> {
                 score += 25 * multiplicator;
@@ -157,8 +205,16 @@ public class Pacman {
                         return 'F';
                     }
                 };
-                board.set(y,x, tree);
+                maze.set(y,x, tree);
             }
         }
+    }
+
+    private void teleport(){
+        for(int i=0; i<maze.getMaze().length; i++)
+            for(int j=0; j<maze.getMaze()[i].length; j++)
+                if(maze.get(i,j).getSymbol() == 'W' && (i!=y || j!=x))
+                    movePacman(5,5);
+
     }
 }
