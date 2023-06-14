@@ -16,7 +16,7 @@ public class GameGUI {
         gridPane = new GridPane();
         updateGridPane(maze);
 
-        game = new Scene(gridPane,maze.getMaze()[0].length * 18,maze.getMaze().length * 18);
+        game = new Scene(gridPane,maze.getMaze()[0].length * 20,maze.getMaze().length * 20);
 
     }
 
@@ -30,8 +30,8 @@ public class GameGUI {
         for (int i = 0; i < maze.getMaze().length; i++)
             for (int j = 0; j < maze.getMaze()[i].length; j++){
                 ImageView imageView = new ImageView(getRender(maze.get(i,j).getSymbol()));
-                imageView.setFitHeight(18);
-                imageView.setFitWidth(18);
+                imageView.setFitHeight(20);
+                imageView.setFitWidth(20);
                 gridPane.add(imageView, j, i);
             }
 
@@ -50,12 +50,12 @@ public class GameGUI {
             case 'o' -> new Image("pt/isec/pa/tinypac/ui/gui/images/coin.png");
             case 'F' -> new Image("pt/isec/pa/tinypac/ui/gui/images/bush.png");
             case 'M' -> new Image("pt/isec/pa/tinypac/ui/gui/images/spawn.png");
-            case 'O' -> new Image("pt/isec/pa/tinypac/ui/gui/images/poison.png");
+            case 'O' -> new Image("pt/isec/pa/tinypac/ui/gui/images/powerup.png");
             case 'Y' -> new Image("pt/isec/pa/tinypac/ui/gui/images/cave_entrance.png");
             case 'y' -> new Image("pt/isec/pa/tinypac/ui/gui/images/cave.png");
             case 'A' -> new Image("pt/isec/pa/tinypac/ui/gui/images/pacman.png");
             case 'S' -> new Image("pt/isec/pa/tinypac/ui/gui/images/berry.png");
-            case 'B', 'P', 'I', 'C' -> new Image("pt/isec/pa/tinypac/ui/gui/images/ghost.png");
+            case 'B', 'P', 'I', 'C' -> new Image("pt/isec/pa/tinypac/ui/gui/images/inky.png");
             default -> new Image("pt/isec/pa/tinypac/ui/gui/images/tile.png");
         };
     }

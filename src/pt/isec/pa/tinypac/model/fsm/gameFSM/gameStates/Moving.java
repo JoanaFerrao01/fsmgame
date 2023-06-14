@@ -1,5 +1,6 @@
 package pt.isec.pa.tinypac.model.fsm.gameFSM.gameStates;
 
+import pt.isec.pa.tinypac.model.characters.Pacman;
 import pt.isec.pa.tinypac.model.data.Maze;
 import pt.isec.pa.tinypac.model.fsm.gameFSM.GameManager;
 import pt.isec.pa.tinypac.model.fsm.gameFSM.GameStateModel;
@@ -16,10 +17,6 @@ public class Moving extends GameStateModel {
         //pacman acorda aka começa a mexer-se
     }
 
-    @Override
-    public Maze enterState(int level) throws Exception {
-        return null;
-    }
 
     @Override
     public void updateState() {
@@ -29,5 +26,10 @@ public class Moving extends GameStateModel {
     @Override
     public void exitState() {
 
+    }
+
+    @Override
+    public Maze enterState(int level, Pacman pacman) throws Exception {
+        return null;
     }
 }

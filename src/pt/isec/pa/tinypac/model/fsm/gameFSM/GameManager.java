@@ -15,9 +15,7 @@ public class GameManager {
     public void startGame() throws Exception {
         this.level = 1;
         currentState = new Start(this); //começa o jogo c/ o estado start
-
-        this.maze = currentState.enterState(level); //faz o codigo inicial do estado start
-        initPacman();
+        this.maze = currentState.enterState(level,pacman); //faz o codigo inicial do estado start
 
         //loop do jogo
         while(currentState.getState() != GameStates.LEVELCLEARED) { // || pacman has 0 lives?
@@ -54,14 +52,5 @@ public class GameManager {
     }
     public Maze getMaze(){return maze;}
 
-    private void initPacman(){
-        for(int i=0; i< maze.getMaze().length; i++) {
-            for (int j = 0; j < maze.getMaze()[i].length; j++)
-                if (maze.get(i, j).getSymbol() == 'M') {
-                    pacman = new Pacman(i, j, maze, this);
-                    maze.set(i,j,pacman.getRender());
-                    return;
-                }
-        }
-    }
+
 }

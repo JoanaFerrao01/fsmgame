@@ -30,6 +30,8 @@ public class Pacman {
 
         this.board = board; //reference
         this.gameManager = gameManager;
+
+        board.set(y,x,render);
     }
 
     public int getX(){ return x;}
