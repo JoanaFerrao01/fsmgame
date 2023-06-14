@@ -1,8 +1,11 @@
 package pt.isec.pa.tinypac.model.fsm.gameFSM;
+import javafx.scene.input.KeyCode;
+import pt.isec.pa.tinypac.model.characters.Direction;
 import pt.isec.pa.tinypac.model.characters.Pacman;
 import pt.isec.pa.tinypac.model.data.Maze;
 import pt.isec.pa.tinypac.model.fsm.gameFSM.gameStates.*;
 
+import static java.lang.Thread.sleep;
 
 
 public class GameManager {
@@ -15,22 +18,25 @@ public class GameManager {
     public void startGame() throws Exception {
         this.level = 1;
         currentState = new Start(this); //começa o jogo c/ o estado start
-        this.maze = currentState.enterState(level,pacman); //faz o codigo inicial do estado start
-
-        //loop do jogo
-        while(currentState.getState() != GameStates.LEVELCLEARED) { // || pacman has 0 lives?
-            handleInput();
-            updateGame();
-            printMaze();
-
-            updateState(new LevelCleared(this));
-        }
-
-        System.out.println("finished game"); // to erase
+        this.maze = currentState.enterState(level); //faz o codigo inicial do estado start
+        this.pacman = currentState.updateState(this.pacman);
     }
 
-    private void handleInput(){
+    public void startLoop(KeyCode code) throws InterruptedException {
+        currentState = new Awaken(this);
+        sleep(5);
+        currentState = new Moving(this);
+        currentState.updateState(); //?
+    }
 
+    public void handleInput(KeyCode code){
+        System.out.println("-" + code);
+        switch (code){
+            case LEFT -> pacman.updateDirection(Direction.LEFT);
+            case RIGHT -> pacman.updateDirection(Direction.RIGHT);
+            case UP -> pacman.updateDirection(Direction.UP);
+            case DOWN -> pacman.updateDirection(Direction.DOWN);
+        }
     }
     private void updateGame(){
         currentState.updateState();
@@ -51,6 +57,6 @@ public class GameManager {
         }
     }
     public Maze getMaze(){return maze;}
-
+    public int getScore(){return pacman.getScore();}
 
 }

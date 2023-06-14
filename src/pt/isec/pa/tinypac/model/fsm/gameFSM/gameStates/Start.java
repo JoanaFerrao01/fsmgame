@@ -20,24 +20,28 @@ public class Start extends GameStateModel {
     }
 
     @Override
-    public Maze enterState(int level, Pacman pacman) throws Exception {
+    public void updateState() {
+
+    }
+
+    @Override
+    public Maze enterState(int level) throws Exception {
         this.state = GameStates.START;
         //setup game
         TxtToMaze converter = new TxtToMaze("src\\pt\\isec\\pa\\tinypac\\levels\\Level0" +level+".txt");
         maze = converter.initMaze();
-        this.pacman = pacman;
+
         return maze;
     }
 
     @Override
-    public void updateState() {
+    public Pacman updateState(Pacman pacman) {
         for(int i=0; i< maze.getMaze().length; i++) {
             for (int j = 0; j < maze.getMaze()[i].length; j++)
-                if (maze.get(i, j).getSymbol() == 'M') {
+                if (maze.get(i, j).getSymbol() == 'M')
                     pacman = new Pacman(j,i, maze, gameManager);
-                    return;
-                }
         }
+        return pacman;
     }
 
     @Override
